@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using TMPro; // Added for TextMeshPro support
+using TMPro;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -27,7 +27,17 @@ public class MenuUIHandler : MonoBehaviour
             DataManager.Instance.CurrentPlayerName = string.IsNullOrEmpty(enteredName) ? "Player" : enteredName;
         }
 
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("main");
+    }
+
+    public void OpenHighScores()
+    {
+        SceneManager.LoadScene("HighScores");
+    }
+
+    public void OpenSettings()
+    {
+        SceneManager.LoadScene("Settings");
     }
 
     public void Exit()

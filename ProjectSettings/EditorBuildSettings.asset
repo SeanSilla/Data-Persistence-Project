@@ -7,12 +7,18 @@ EditorBuildSettings:
   m_Scenes:
   - enabled: 0
     path: Assets/Scenes/SampleScene.unity
-    guid: d1c3109bdb54ad54c8a2b2838528e640
+    guid: 00000000000000000000000000000000
   - enabled: 1
     path: Assets/Scenes/Menu.unity
     guid: b19603b900d860f47b9c3370a79273ff
   - enabled: 1
     path: Assets/Scenes/main.unity
     guid: 78a510c781f19db4da14f78ebb30946a
+  - enabled: 1
+    path: Assets/Scenes/HighScores.unity
+    guid: b6d6439a63040074cae789fe07af2448
+  - enabled: 1
+    path: Assets/Scenes/Settings.unity
+    guid: 7e72ae00e1cd4c744a1fb5e505f216ee
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

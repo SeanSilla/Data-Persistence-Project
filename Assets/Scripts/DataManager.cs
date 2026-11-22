@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
@@ -6,8 +7,14 @@ public class DataManager : MonoBehaviour
     public static DataManager Instance;
 
     public string CurrentPlayerName = "Player";
-    public string BestPlayerName = "None";
-    public int BestScore = 0;
+
+    public List<HighScoreEntry> HighScores = new List<HighScoreEntry>();
+    public float PaddleSpeed = 2.0f;
+    public float BallSpeed = 3.0f;
+    public int BrickRows = 6;
+
+    public string BestPlayerName => HighScores.Count > 0 ? HighScores[0].PlayerName : "None";
+    public int BestScore => HighScores.Count > 0 ? HighScores[0].Score : 0;
 
     private string SaveFilePath => Application.persistentDataPath + "/savefile.json";
 
@@ -21,34 +28,78 @@ public class DataManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        LoadBestScore();
+        LoadDataFromDisk();
+    }
+
+    [System.Serializable]
+    public class HighScoreEntry
+    {
+        public string PlayerName;
+        public int Score;
     }
 
     [System.Serializable]
     class SaveData
     {
-        public string BestPlayerName;
-        public int BestScore;
+        public List<HighScoreEntry> HighScores = new List<HighScoreEntry>();
+        public float PaddleSpeed = 2.0f;
+        public float BallSpeed = 3.0f;
+        public int BrickRows = 6;
     }
 
-    public void SaveBestScore()
+    public void AddHighScore(string playerName, int score)
+    {
+        if (score <= 0) return;
+
+        HighScores.Add(new HighScoreEntry
+        {
+            PlayerName = string.IsNullOrEmpty(playerName) ? "Player" : playerName,
+            Score = score
+        });
+
+        HighScores.Sort((a, b) => b.Score.CompareTo(a.Score));
+
+        if (HighScores.Count > 5)
+        {
+            HighScores.RemoveRange(5, HighScores.Count - 5);
+        }
+
+        SaveDataToDisk();
+    }
+
+    public void ResetHighScores()
+    {
+        HighScores.Clear();
+        SaveDataToDisk();
+    }
+
+    public void SaveDataToDisk()
     {
         SaveData data = new SaveData
         {
-            BestPlayerName = BestPlayerName,
-            BestScore = BestScore
+            HighScores = HighScores,
+            PaddleSpeed = PaddleSpeed,
+            BallSpeed = BallSpeed,
+            BrickRows = BrickRows
         };
+
         string json = JsonUtility.ToJson(data);
         File.WriteAllText(SaveFilePath, json);
     }
-    public void LoadBestScore()
+
+    public void LoadDataFromDisk()
     {
         if (File.Exists(SaveFilePath))
         {
             string json = File.ReadAllText(SaveFilePath);
             SaveData data = JsonUtility.FromJson<SaveData>(json);
-            BestPlayerName = data.BestPlayerName;
-            BestScore = data.BestScore;
+            if (data != null)
+            {
+                HighScores = data.HighScores ?? new List<HighScoreEntry>();
+                PaddleSpeed = data.PaddleSpeed > 0 ? data.PaddleSpeed : 2.0f;
+                BallSpeed = data.BallSpeed > 0 ? data.BallSpeed : 3.0f;
+                BrickRows = data.BrickRows > 0 ? data.BrickRows : 6;
+            }
         }
     }
 }
